@@ -7,7 +7,7 @@ import OutlinedButton from '../UI/OutlinedButton';
 import { Colors } from '../../constants/colors';
 import { getMapPreview } from '../../util/location';
 
-const LocationPicker = () => {
+const LocationPicker = ({ onPickLocation }) => {
 	const [pickedLocation, setPickedLocation] = useState();
 	const [locationPermissionInformation, requestPermission] = useForegroundPermissions();
 	const isFocused = useIsFocused();
@@ -24,6 +24,12 @@ const LocationPicker = () => {
 			setPickedLocation(mapPickedLocation);
 		}
 	}, [route, isFocused]);
+
+	useEffect(() => {
+		if (pickedLocation) {
+			onPickLocation(pickedLocation);
+		}
+	}, [pickedLocation, onPickLocation]);
 
 	async function verifyPermissions() {
 		console.log('Current location permission status:', locationPermissionInformation.status);
