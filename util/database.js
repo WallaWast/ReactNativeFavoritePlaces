@@ -23,10 +23,10 @@ export async function init() {
                     lng REAL NOT NULL
                 );`
 			);
-			console.log('Table created or already exists.');
+			//console.log('Table created or already exists.');
 		});
 
-		console.log('Transaction completed successfully.');
+		//console.log('Transaction completed successfully.');
 	} catch (error) {
 		console.error('Error during database initialization:', error);
 		throw error; // Re-throw error for further handling
@@ -44,7 +44,7 @@ export async function insertPlace(place) {
 			[place.title, place.imageUri, place.address, place.location.lat, place.location.lng]
 		);
 
-		console.log(result);
+		//console.log(result);
 	} catch (error) {
 		console.error('Error during insert new place:', error);
 		throw error; // Re-throw error for further handling
@@ -75,6 +75,29 @@ export const fetchPlaces = async () => {
 		return places;
 	} catch (error) {
 		console.error('Error during fetch places:', error);
+		throw error; // Re-throw error for further handling
+	}
+};
+
+export const fetchPlaceDetails = async (id) => {
+	try {
+		const db = await openDatabase();
+		const place = await db.getFirstAsync(`SELECT * FROM places WHERE id = ?`, [id]);
+
+		//console.log('Place details:', place);
+
+		return new Place(
+			place.title,
+			place.imageUri,
+			{
+				address: place.address,
+				lat: place.lat,
+				lng: place.lng,
+			},
+			place.id
+		);
+	} catch (error) {
+		console.error('Error during fetch place details:', error);
 		throw error; // Re-throw error for further handling
 	}
 };
