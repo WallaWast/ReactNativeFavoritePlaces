@@ -1,4 +1,4 @@
-import { Alert, Image, View, Text, StyleSheet } from 'react-native';
+import { Alert, Image, View, Text, StyleSheet, PermissionsAndroid, Platform } from 'react-native';
 import { launchCameraAsync, useCameraPermissions, PermissionStatus } from 'expo-image-picker';
 import { useState } from 'react';
 import { Colors } from '../../constants/colors';
@@ -11,15 +11,34 @@ function ImagePicker({ onTakeImage }) {
 	async function verifyPermission() {
 		console.log('Current camera permission status:', camerPermissionInformation.status);
 
-		if (camerPermissionInformation.status === PermissionStatus.UNDETERMINED) {
-			const permissionResponse = await requestPermission();
-			console.log('Permission response:', permissionResponse);
-			return permissionResponse.granted;
-		}
+		if (Platform.OS === 'android' && camerPermissionInformation.status !== PermissionStatus.GRANTED) {
+			const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA, {
+				title: 'Camera Permission',
+				message: 'This app needs access to your camera to take pictures.',
+				buttonNeutral: 'Ask Me Later',
+				buttonNegative: 'Cancel',
+				buttonPositive: 'OK',
+			});
 
-		if (camerPermissionInformation.status === PermissionStatus.DENIED) {
-			Alert.alert('Insufficient Permission!', 'You need to grant camera permission to use this app.');
-			return false;
+			if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+				console.log('Camera permission granted');
+				return true;
+			} else {
+				console.log('Camera permission denied');
+				Alert.alert('Insufficient Permission!', 'You need to grant camera permission to use this app.');
+				return false;
+			}
+		} else {
+			if (camerPermissionInformation.status === PermissionStatus.UNDETERMINED) {
+				const permissionResponse = await requestPermission();
+				console.log('Permission response:', permissionResponse);
+				return permissionResponse.granted;
+			}
+
+			if (camerPermissionInformation.status === PermissionStatus.DENIED) {
+				Alert.alert('Insufficient Permission!', 'You need to grant camera permission to use this app.');
+				return false;
+			}
 		}
 
 		return true;
