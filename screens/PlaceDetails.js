@@ -8,7 +8,12 @@ const PlaceDetails = ({ route, navigation }) => {
 	const [fetchedPlace, setFetchedPlace] = useState();
 	const selectedPlaceId = route.params.placeId;
 
-	function showOnMapHandler() {}
+	function showOnMapHandler() {
+		navigation.navigate('Map', {
+			initialLat: fetchedPlace.location.lat,
+			initialLng: fetchedPlace.location.lng,
+		});
+	}
 
 	useEffect(() => {
 		async function loadPlace() {
