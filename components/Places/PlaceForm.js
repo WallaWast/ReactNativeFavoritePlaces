@@ -27,7 +27,7 @@ function PlaceForm({ onCreatePlace }) {
 		console.log(enteredTitle);
 		console.log(selectedImage);
 		console.log(pickedLocation);
-		const placeDate = new Place(enteredTitle, selectedImage, pickedLocation);
+		const placeDate = new Place(enteredTitle, selectedImage, pickedLocation, null);
 		onCreatePlace(placeDate);
 	}
 

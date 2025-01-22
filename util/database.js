@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import { Place } from '../models/place';
 
 async function openDatabase() {
 	return SQLite.openDatabaseAsync('places');
@@ -34,6 +35,7 @@ export async function init() {
 
 export async function insertPlace(place) {
 	try {
+		console.log('Place to add: ', place);
 		const db = await openDatabase();
 		const result = await db.runAsync(
 			`INSERT
@@ -48,3 +50,31 @@ export async function insertPlace(place) {
 		throw error; // Re-throw error for further handling
 	}
 }
+
+export const fetchPlaces = async () => {
+	const places = [];
+	try {
+		const db = await openDatabase();
+		const allRows = await db.getAllAsync(`SELECT * FROM places`, []);
+
+		for (const place of allRows) {
+			places.push(
+				new Place(
+					place.title,
+					place.imageUri,
+					{
+						address: place.address,
+						lat: place.lat,
+						lng: place.lng,
+					},
+					place.id
+				)
+			);
+		}
+
+		return places;
+	} catch (error) {
+		console.error('Error during fetch places:', error);
+		throw error; // Re-throw error for further handling
+	}
+};
