@@ -6,10 +6,31 @@ import AddPlaces from './screens/AddPlaces';
 import IconButton from './components/UI/IconButton';
 import { Colors } from './constants/colors';
 import Map from './screens/Map';
+import { useEffect, useState, useCallback } from 'react';
+import { init } from './util/database';
+import * as SplashScreen from 'expo-splash-screen';
 
 const Stack = createNativeStackNavigator();
 
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
+
 export default function App() {
+	const [appIsReady, setAppIsReady] = useState(false);
+	useEffect(() => {
+		async function prepare() {
+			await init();
+			setAppIsReady(true);
+		}
+		prepare();
+	}, []);
+
+	if (!appIsReady) {
+		return null;
+	}
+
+	SplashScreen.hide();
+
 	return (
 		<>
 			<StatusBar style='dark' />
